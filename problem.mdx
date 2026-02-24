@@ -151,26 +151,12 @@ What they do not support is **autonomous response**—reasoning over accumulated
 ## The Missing Layer
 
 There's a gap in the security stack:
-```
-┌─────────────────────────────────────────────────────────────┐
-│                     EXISTING SECURITY                       │
-├─────────────────────────────────────────────────────────────┤
-│  Perimeter        │  Network firewalls, WAF                 │
-│  Identity         │  IAM, RBAC, OAuth                       │
-│  Application      │  Input validation, output filtering     │
-│  Data             │  Encryption, DLP                        │
-│  Observability    │  SIEM, logging, monitoring              │
-├─────────────────────────────────────────────────────────────┤
-│                     ??? GAP ???                              │
-│                                                             │
-│  Where do you enforce policy on AI-initiated actions        │
-│  BEFORE they execute, with context-aware evaluation?        │
-│                                                             │
-├─────────────────────────────────────────────────────────────┤
-│                     TOOLS / APIS                            │
-│  Databases, email, files, cloud, external services          │
-└─────────────────────────────────────────────────────────────┘
-```
+
+<img 
+  src="/images/existing_security.png"
+  alt="AARM System Architecture"
+  style={{ maxWidth: "100%", height: "auto" }}
+/>
 
 This gap is where AARM operates: **runtime enforcement at the action boundary**.
 

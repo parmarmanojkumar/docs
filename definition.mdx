@@ -116,23 +116,12 @@ AARM does not address (but may complement):
 ## Relationship to Existing Security
 
 AARM fills a gap in the security stack—it does not replace existing controls:
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    Existing Security Stack                       │
-├─────────────────────────────────────────────────────────────────┤
-│  Identity (IAM)        → Who is making the request?             │
-│  Network (Firewall)    → Can they reach this endpoint?          │
-│  Application (WAF)     → Is the request well-formed?            │
-│  Data (DLP)            → Is sensitive data leaving?             │
-│  Monitoring (SIEM)     → What happened? (after the fact)        │
-├─────────────────────────────────────────────────────────────────┤
-│                         ⚠️  GAP  ⚠️                              │
-│     Should THIS action, with THESE parameters, by THIS agent,   │
-│     in THIS context, be allowed to execute RIGHT NOW?           │
-├─────────────────────────────────────────────────────────────────┤
-│  AARM                  → Inline action authorization + audit    │
-└─────────────────────────────────────────────────────────────────┘
-```
+
+<img 
+  src="/images/existing_security_stack.png"
+  alt="AARM System Architecture"
+  style={{ maxWidth: "100%", height: "auto" }}
+/>
 
 ---
 

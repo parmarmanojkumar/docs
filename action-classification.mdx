@@ -159,43 +159,12 @@ rules:
 ---
 
 ## Evaluation Flow
-```
-                    ┌─────────────────┐
-                    │  Action Request │
-                    └────────┬────────┘
-                             ▼
-                    ┌─────────────────┐
-                    │ Forbidden Check │
-                    └────────┬────────┘
-                             │
-              ┌──────────────┴──────────────┐
-              ▼                             ▼
-        [Matches]                    [No Match]
-              │                             │
-              ▼                             ▼
-           DENY                  ┌─────────────────┐
-                                 │  Policy Check   │
-                                 └────────┬────────┘
-                                          │
-                          ┌───────────────┼───────────────┐
-                          ▼               ▼               ▼
-                    [ALLOW]          [DENY]         [STEP-UP]
-                          │               │               │
-                          ▼               ▼               ▼
-               ┌─────────────────────────────────────────────┐
-               │           Context Evaluation                │
-               └─────────────────────────────────────────────┘
-                          │               │               │
-                          ▼               ▼               ▼
-               Context-Dependent   Context-Dependent   Context-Dependent
-                    Deny?              Allow?            Decision
-                          │               │               │
-                          ▼               ▼               ▼
-                  [Mismatch]         [Alignment]      [Evaluate]
-                       │                  │               │
-                       ▼                  ▼               ▼
-                     DENY            ALLOW/STEP-UP    STEP-UP
-```
+
+<img 
+  src="/images/evaluation_flow.png"
+  alt="AARM System Architecture"
+  style={{ maxWidth: "100%", height: "auto" }}
+/>
 
 ---
 
