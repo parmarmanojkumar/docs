@@ -3,110 +3,121 @@ title: "Noma Security"
 description: "AARM Core conformant runtime security platform for modern AI infrastructure."
 ---
 
-<div style={{ display: 'flex', alignItems: 'flex-start', gap: '1.25rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
+<div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
   <img
     src="/images/noma.security.png"
     alt="Noma Security"
-    style={{ width: '64px', height: '64px', borderRadius: '10px', objectFit: 'contain', border: '1px solid var(--colors-border)' }}
+    style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'contain', border: '1px solid var(--colors-border)' }}
   />
-  <div style={{ flex: 1, minWidth: '200px' }}>
-    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '4px' }}>
-      <h1 style={{ margin: 0, fontSize: '22px', fontWeight: 500 }}>Noma Security</h1>
-      <span style={{ background: '#EAF3DE', color: '#3B6D11', fontSize: '11px', fontWeight: 600, padding: '3px 8px', borderRadius: '4px', letterSpacing: '0.04em' }}>
-        AARM CONFORMANT — CORE
-      </span>
-    </div>
-    <p style={{ margin: 0, color: 'var(--colors-content-secondary)', fontSize: '14px' }}>
-      Autonomous runtime security for modern AI infrastructure · <a href="https://noma.security" target="_blank">noma.security ↗</a>
-    </p>
-  </div>
+  <span style={{
+    background: 'linear-gradient(135deg, #E8F5E9, #C8E6C9)',
+    color: '#2E7D32',
+    fontSize: '11px',
+    fontWeight: 700,
+    padding: '4px 10px',
+    borderRadius: '20px',
+    letterSpacing: '0.05em',
+    border: '1px solid rgba(46, 125, 50, 0.15)',
+    boxShadow: '0 1px 3px rgba(46, 125, 50, 0.08)'
+  }}>
+    ✓ AARM CONFORMANT — CORE
+  </span>
+  <span style={{ color: 'var(--colors-content-secondary)', fontSize: '14px' }}>
+    Enterprise AI security & governance platform · <a href="https://noma.security" target="_blank">noma.security ↗</a>
+  </span>
 </div>
 
 <Tabs>
   <Tab title="Overview">
 
-<CardGroup cols={4}>
-  <Card>
-    **Status**
-
-    Conformant
-  </Card>
-  <Card>
-    **Tier**
-
-    Core (R1–R6)
-  </Card>
-  <Card>
-    **Verified**
-
-    February 2025
-  </Card>
-  <Card>
-    **TWG member**
-
-    Yes
-  </Card>
-</CardGroup>
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '2rem' }}>
+  <div style={{
+    padding: '16px',
+    borderRadius: '12px',
+    border: '1px solid var(--colors-border)',
+    background: 'var(--colors-background-secondary)',
+  }}>
+    <div style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--colors-content-secondary)', marginBottom: '6px' }}>Status</div>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+      <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#4CAF50', display: 'inline-block', boxShadow: '0 0 6px rgba(76, 175, 80, 0.4)' }}></span>
+      <span style={{ fontSize: '15px', fontWeight: 600 }}>Conformant</span>
+    </div>
+  </div>
+  <div style={{
+    padding: '16px',
+    borderRadius: '12px',
+    border: '1px solid var(--colors-border)',
+    background: 'var(--colors-background-secondary)',
+  }}>
+    <div style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--colors-content-secondary)', marginBottom: '6px' }}>Tier</div>
+    <div style={{ fontSize: '15px', fontWeight: 600 }}>Core (R1–R6)</div>
+  </div>
+  <div style={{
+    padding: '16px',
+    borderRadius: '12px',
+    border: '1px solid var(--colors-border)',
+    background: 'var(--colors-background-secondary)',
+  }}>
+    <div style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--colors-content-secondary)', marginBottom: '6px' }}>Verified</div>
+    <div style={{ fontSize: '15px', fontWeight: 600 }}>February 2025</div>
+  </div>
+  <div style={{
+    padding: '16px',
+    borderRadius: '12px',
+    border: '1px solid var(--colors-border)',
+    background: 'var(--colors-background-secondary)',
+  }}>
+    <div style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--colors-content-secondary)', marginBottom: '6px' }}>TWG Member</div>
+    <div style={{ fontSize: '15px', fontWeight: 600 }}>Yes</div>
+  </div>
+</div>
 
 ### Description
 
-Noma Security is a unified platform to secure and govern AI agents and autonomous systems. It delivers safety, security, and compliance controls at the runtime layer — evaluating and enforcing policy on every agent action before execution occurs. Noma was the first company to achieve AARM Core conformance, completing the full testing protocol against R1–R6 of the specification.
+Noma Security is an enterprise AI security and governance platform that discovers, secures, and protects AI systems and autonomous agents across the full lifecycle. The platform delivers safety, security, and compliance controls at the runtime layer — evaluating and enforcing policy on every agent action before execution occurs.
 
-### Capabilities
+Noma takes a holistic approach to AI security, connecting posture management, automated red teaming, and runtime protection into a single contextualized platform. Posture context informs what gets tested, test results become runtime defenses, and runtime intelligence reshapes posture priorities.
+
+Noma was the **first company to achieve AARM Core conformance**, completing the full testing protocol against R1–R6 of the specification.
+
+### Platform capabilities
 
 <CardGroup cols={2}>
-  <Card title="Runtime interception" icon="shield-check">
-    Pre-execution evaluation of every agent action before any side effect occurs.
+  <Card title="AI Security Posture Management" icon="radar">
+    Continuous discovery and visibility across the entire AI landscape — models, agents, MCP servers, data sources, and their dependencies — with contextual risk assessment and compliance management.
+  </Card>
+  <Card title="Runtime protection" icon="shield-check">
+    Real-time guardrails on models and agents in production. Detects and blocks malicious prompts, rogue outputs, and unauthorized agent actions before any side effect occurs.
+  </Card>
+  <Card title="Automated red teaming" icon="crosshairs">
+    Agent-driven security testing that continuously attacks AI applications and agents to expose vulnerabilities — prompt injection, jailbreaks, and data leakage — with no manual process required.
   </Card>
   <Card title="Policy enforcement" icon="sliders">
-    Configurable ALLOW / BLOCK / DEFER rules mapped to organizational risk posture.
+    Configurable ALLOW / BLOCK / DEFER rules mapped to organizational risk posture with centralized enforcement across multi-agent deployments.
   </Card>
-  <Card title="Context accumulation" icon="layer-group">
-    Session-scoped action history enabling multi-step intent reasoning across an agent session.
+  <Card title="MCP server security" icon="plug">
+    Protocol-layer enforcement for Model Context Protocol connections and tool calls, with a centralized MCP Gateway for unified policy enforcement across all MCP server connections.
   </Card>
-  <Card title="Audit logging" icon="scroll">
-    Immutable, tamper-evident record of all authorization decisions and outcomes.
-  </Card>
-  <Card title="MCP security" icon="plug">
-    Protocol-layer enforcement for Model Context Protocol connections and tool calls.
-  </Card>
-  <Card title="Agent governance" icon="sitemap">
-    Enterprise-wide visibility and control across multi-agent deployments and pipelines.
+  <Card title="Audit & governance" icon="scroll">
+    Immutable, tamper-evident records of all authorization decisions and outcomes, with enterprise-wide visibility and control across agent fleets.
   </Card>
 </CardGroup>
 
-  </Tab>
+### Integration coverage
 
-  <Tab title="About">
-
-### Company
-
-Noma Security was founded to address the enforcement gap that exists between AI agents and the systems they interact with — a layer that traditional security tooling was never designed to protect. The platform is built for organizations deploying AI agents at scale in production environments where auditability, policy control, and runtime visibility are non-negotiable.
-
-### Use cases
+Noma integrates across 80+ data, AI, and MLOps platforms with native support for three deployment models:
 
 <AccordionGroup>
-  <Accordion title="Enterprise AI deployments">
-    Governance and control across agent fleets with full audit trails. Noma provides a centralized enforcement plane for organizations running multiple agent systems across teams and environments.
+  <Accordion title="Homegrown AI applications">
+    Custom-built AI applications and agents via REST API, native Python and JavaScript SDKs for frameworks like LangChain and CrewAI, or a centralized gateway for unified policy enforcement.
   </Accordion>
-  <Accordion title="MCP environments">
-    Enforcement at the protocol layer for Model Context Protocol connections. Noma intercepts and evaluates tool calls before they reach connected services, applying policy before any data is accessed or modified.
+  <Accordion title="SaaS agent platforms">
+    Commercial AI and agent platforms including Microsoft Copilot Studio, Salesforce AgentForce, ServiceNow, and 80+ others. Agentless deployment with no code changes required.
   </Accordion>
-  <Accordion title="Regulated industries">
-    Financial services, healthcare, and legal environments requiring action-level compliance controls. Noma's audit-ready decision records satisfy documentation requirements for regulated AI deployments.
-  </Accordion>
-  <Accordion title="Multi-agent pipelines">
-    Security controls for orchestration layers where one agent delegates actions to another. Noma maintains policy enforcement across agent-to-agent handoffs.
+  <Accordion title="Local coding agents">
+    AI-powered development tools including Cursor, Windsurf, and major IDEs, plus centralized MCP Gateway security across all MCP server connections.
   </Accordion>
 </AccordionGroup>
-
-### Contact
-
-| | |
-|---|---|
-| Website | [noma.security ↗](https://noma.security) |
-| AARM contact | AARM TWG liaison |
-| GitHub | — |
 
   </Tab>
 
@@ -120,7 +131,6 @@ Noma Security was founded to address the enforcement gap that exists between AI 
 | Conformance tier | Core (R1–R6 MUST) |
 | Verified by | Herman Errico, AARM author |
 | Date | February 2025 |
-| Conformance report | [Download PDF ↗](#) |
 
 ### Architecture
 
@@ -149,16 +159,35 @@ The enforcement decision returns one of five outcomes defined in the AARM specif
 | R8 | Telemetry Export | — Not verified |
 | R9 | Least Privilege Enforcement | ✅ Met |
 
-### Publications & resources
+  </Tab>
 
-<CardGroup cols={2}>
-  <Card title="AARM Core conformance report" icon="file-pdf" href="#">
-    Full conformance evaluation report against R1–R6 of AARM v0.1, verified February 2025.
-  </Card>
-  <Card title="Technical architecture overview" icon="book-open" href="https://noma.security">
-    Noma's documentation covering the enforcement proxy architecture and integration patterns.
-  </Card>
-</CardGroup>
+  <Tab title="About">
+
+### Company
+
+Noma Security was founded to close the enforcement gap between AI agents and the systems they interact with — a layer that traditional security tooling was never designed to protect. The company takes a holistic approach to AI security, covering autonomous agents, large language models, and RAG systems with comprehensive security and governance from a single platform.
+
+The platform is built for organizations deploying AI agents at scale in production environments where auditability, policy control, and runtime visibility are non-negotiable. Noma has raised over $132M in funding across Series A and B, with 1,300% ARR growth and hundreds of enterprise customers across finance, life sciences, retail, and technology.
+
+### Key facts
+
+| | |
+|---|---|
+| Founded | Tel Aviv & New York |
+| Funding | $132M+ (Series B) |
+| Customers | 500+ enterprises including Fortune 500 |
+| Team | 50+ AI security experts |
+| Certifications | SOC 2 Type II, HIPAA, ISO 27001 |
+| Recognition | Gartner Cool Vendor, SINET16, CRN Hot AI Security, Forbes Next |
+
+### Contact
+
+| | |
+|---|---|
+| Website | [noma.security ↗](https://noma.security) |
+| AARM contact | AARM TWG liaison |
+| LinkedIn | [linkedin.com/company/noma-security ↗](https://www.linkedin.com/company/noma-security/) |
+| Twitter | [@NomaSecurity ↗](https://x.com/NomaSecurity) |
 
   </Tab>
 
