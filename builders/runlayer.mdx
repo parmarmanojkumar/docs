@@ -5,7 +5,7 @@ description: "Enterprise control plane for MCP servers, skills, and agents"
 
 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
   <img
-    src="/images/runlayer.png"
+    src="/images/runlayer_logo.png"
     alt="Runlayer"
     style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'contain', border: '1px solid var(--colors-border)' }}
   />
@@ -20,7 +20,7 @@ description: "Enterprise control plane for MCP servers, skills, and agents"
     border: '1px solid rgba(46, 125, 50, 0.15)',
     boxShadow: '0 1px 3px rgba(46, 125, 50, 0.08)'
   }}>
-    ✓ AARM CONFORMANT — CORE
+    ✓ AARM CONFORMANT — EXTENDED
   </span>
   <span style={{ color: 'var(--colors-content-secondary)', fontSize: '14px' }}>
     MCP & AI agent security · <a href="https://runlayer.com" target="_blank">runlayer.com ↗</a>
@@ -50,7 +50,7 @@ description: "Enterprise control plane for MCP servers, skills, and agents"
     background: 'var(--colors-background-secondary)',
   }}>
     <div style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--colors-content-secondary)', marginBottom: '6px' }}>Tier</div>
-    <div style={{ fontSize: '15px', fontWeight: 600 }}>Core (R1–R6)</div>
+    <div style={{ fontSize: '15px', fontWeight: 600 }}>Extended (R1–R9)</div>
   </div>
   <div style={{
     padding: '16px',
@@ -131,9 +131,8 @@ Runlayer is designed to sit in front of the AI tools enterprises already use, wi
 | | |
 |---|---|
 | Specification version | AARM v1.0 |
-| Status | Conformant |
-| Conformance tier | Core (R1–R6) |
-| Verified by | Herman Errico, AARM Technical Working Group |
+| Conformance tier | Extended (R1–R9) |
+| Verified by | Herman Errico, AARM author |
 | Date | April 2026 |
 
 ### Architecture
@@ -146,7 +145,8 @@ Authorization decisions, identity bindings, and policy evaluations are written t
 
 ### AARM requirement coverage
 
-#### Core requirements (R1–R6 MUST)
+#### Core requirements (R1–R6 MUST) extended requirements (R7–R9 SHOULD)
+
 
 | Requirement | Description | Status |
 |---|---|---|
@@ -156,11 +156,6 @@ Authorization decisions, identity bindings, and policy evaluations are written t
 | R4 | Five authorization decisions (ALLOW / DENY / MODIFY / STEP_UP) | ✅ Met |
 | R5 | Immutable audit log | ✅ Met |
 | R6 | Identity Binding | ✅ Met |
-
-#### Extended requirements (R7–R9 SHOULD)
-
-| Requirement | Description | Status |
-|---|---|---|
 | R7 | Semantic distance tracking | ✅ Met |
 | R8 | Telemetry Export | ✅ Met |
 | R9 | Least Privilege Enforcement | ✅ Met |
