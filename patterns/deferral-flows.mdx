@@ -1,0 +1,196 @@
+---
+title: "Deferral Flows"
+description: "Implement DEFER decisions with progressive context collection, bounded waiting, and escalation."
+---
+
+## Overview
+
+Deferral flows implement the fifth AARM decision type: **DEFER**.
+
+Use them when a system cannot safely decide yet, but additional context could still produce a correct decision without immediately routing to a human approver.
+
+Typical examples:
+
+- credential rotation outside an expected maintenance window
+- ambiguous destination ownership for a data transfer
+- stale or missing classification metadata
+- conflicting session signals during high-impact actions
+
+---
+
+## Basic Flow
+
+```
+Action arrives
+      ↓
+Policy evaluates → DEFER
+      ↓
+Store suspended action + identity + context
+      ↓
+Collect additional evidence
+      ↓
+Re-evaluate
+      ↓
+┌────────────┬────────────┬─────────────┐
+ALLOW      DENY        STEP_UP        TIMEOUT
+└────────────┴────────────┴─────────────┘
+```
+
+---
+
+## Design Rules
+
+### 1. Preserve original context
+
+The deferred action should carry:
+
+- original action request
+- session context snapshot
+- identity chain
+- reason for deferral
+- what evidence is still needed
+
+### 2. Bound the defer window
+
+Deferral without timeout becomes hidden queueing. Set explicit deadlines and terminal outcomes.
+
+### 3. Prefer narrow evidence requests
+
+Don’t ask “is this safe?” Ask concrete questions:
+
+- is the target environment currently in maintenance mode?
+- is the recipient domain on the approved list?
+- did the user explicitly confirm deletion of these records?
+
+### 4. Emit receipts twice
+
+You need a receipt for:
+
+- the original **DEFER**
+- the final resolution outcome
+
+---
+
+## Example: Maintenance Window Verification
+
+```python
+async def defer_credential_rotation(action, decision, context):
+    deferred = await deferral_store.create({
+        "action": action,
+        "reason": decision.reason,
+        "context_needed": ["maintenance_window_status"],
+        "timeout_seconds": 600,
+    })
+
+    window = await maintenance_api.lookup(
+        environment=action["parameters"]["environment"]
+    )
+
+    if window.active:
+        action["context"]["maintenance_window"] = window.id
+        return await policy_engine.evaluate(action)
+
+    return {
+        "result": "DENY",
+        "reason": "Credential rotation attempted outside approved maintenance window",
+    }
+```
+
+---
+
+## Example: User Confirmation as Resolution Input
+
+```python
+async def request_user_confirmation(deferred):
+    prompt = {
+        "question": "The agent wants to delete 47 records in the staging environment. Continue?",
+        "timeout_seconds": 300,
+    }
+    response = await user_confirmation_service.ask(
+        user=deferred.identity.human_principal,
+        prompt=prompt,
+    )
+
+    if response.confirmed:
+        return {"result": "STEP_UP", "reason": "User confirmed high-risk action"}
+    return {"result": "DENY", "reason": "User did not confirm deletion"}
+```
+
+This is still a deferral flow, not direct approval. The deferral is collecting the missing context needed for a later decision.
+
+---
+
+## Queue and Retry Pattern
+
+```python
+class DeferralWorker:
+    async def process(self, deferred_id: str):
+        deferred = await self.store.get(deferred_id)
+
+        for resolver in self.resolvers:
+            outcome = await resolver.try_resolve(deferred)
+            if outcome.resolved:
+                return await self.finalize(deferred, outcome)
+
+        if deferred.attempts >= self.max_attempts:
+            return await self.finalize(
+                deferred,
+                Resolution(result="STEP_UP", reason="Automatic resolution exhausted"),
+            )
+
+        await self.store.reschedule(deferred_id, delay_seconds=self.retry_backoff)
+```
+
+---
+
+## Timeout Strategies
+
+| Strategy | Behavior | Best For |
+|----------|----------|----------|
+| **Fail closed** | Timeout resolves to DENY | Destructive or external actions |
+| **Escalate on timeout** | Timeout resolves to STEP_UP | Workflows where human judgment is acceptable |
+| **Cancel and notify** | Timeout ends the action and informs caller | Low-priority or user-facing productivity tasks |
+
+The important invariant is simple: **timeout must not become implicit allow**.
+
+---
+
+## Operational Signals
+
+Track these metrics:
+
+- deferred action count
+- median time to resolution
+- timeout rate
+- escalation rate
+- resolver success rate by source
+
+High timeout or escalation rates usually mean either:
+
+- policies are too ambiguous
+- upstream metadata systems are weak
+- the deferral flow is being used where a direct `DENY` or `STEP_UP` would be cleaner
+
+---
+
+## Conformance Mapping
+
+Deferral flows directly support:
+
+- [R1](/conformance/requirements) pre-execution blocking
+- [R3](/conformance/requirements) context-dependent defer
+- [R4](/conformance/requirements) five-decision enforcement
+- [R5](/conformance/requirements) receipt generation for deferral and resolution
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Deferral Service" icon="clock" href="/components/deferral-service">
+    Core service model for suspended actions and bounded resolution
+  </Card>
+  <Card title="Approval Flows" icon="user-check" href="/patterns/approval-flows">
+    What to do when DEFER escalates into human authorization
+  </Card>
+</CardGroup>

@@ -7,9 +7,9 @@ description: "How AARM categorizes actions based on policy and contextual intent
 
 Not all actions can be evaluated the same way. A static policy that simply allows or denies based on action type will either block legitimate work or miss actual threats.
 
-AARM classifies actions into three categories based on how they should be evaluated:
+AARM classifies actions into four categories based on how they should be evaluated:
 
-<CardGroup cols={3}>
+<CardGroup cols={4}>
   <Card title="Forbidden" icon="ban">
     Always blocked regardless of context
   </Card>
@@ -18,6 +18,9 @@ AARM classifies actions into three categories based on how they should be evalua
   </Card>
   <Card title="Context-Dependent Allow" icon="shield-check">
     Denied by default, permitted when context confirms alignment
+  </Card>
+  <Card title="Context-Dependent Defer" icon="clock">
+    Suspended when context is insufficient or conflicting
   </Card>
 </CardGroup>
 
@@ -40,7 +43,7 @@ Static allow/deny policies cannot handle these scenarios. Classification based o
 
 ---
 
-## The Three Categories
+## The Four Categories
 
 ### Forbidden Actions
 
@@ -112,6 +115,7 @@ rules:
 | Original user request | What the user actually asked for |
 | Parameter patterns | Whether this action fits the stated goal |
 | Timing and volume | Whether behavior matches expected patterns |
+| Missing or conflicting evidence | Whether the action should be suspended pending more context |
 
 ---
 
@@ -155,6 +159,39 @@ rules:
 | High confidence, high impact | STEP-UP |
 | Medium confidence | STEP-UP |
 | Low confidence | DENY |
+
+---
+
+### Context-Dependent Defer
+
+Actions that cannot yet be safely resolved because context is missing, stale, ambiguous, or conflicting.
+
+| Characteristics | Examples |
+|-----------------|----------|
+| Required metadata unavailable | Classification or ownership lookup has not completed |
+| Environmental ambiguity | Maintenance-window or environment-state signals conflict |
+| Context gap | The system needs a narrow confirmation or verification before deciding |
+| Resolution may still be possible | Additional context could change the outcome |
+
+**Evaluation**: Context insufficient or contradictory → **DEFER**
+
+The key insight: sometimes the correct security decision is to wait.
+```yaml
+# Example policy
+rules:
+  - id: defer-ambiguous-credential-rotation
+    match:
+      tool: credentials
+      operation: rotate
+    context:
+      maintenance_window:
+        unknown_or_conflicting: true
+    action: DEFER
+    classification: context_dependent_defer
+    reason: "Credential rotation requires verified maintenance window state"
+```
+
+Unlike `STEP_UP`, which assumes the decision structure is clear but human authorization is required, `DEFER` means the system does not yet know enough to classify the action safely.
 
 ---
 
@@ -243,6 +280,21 @@ See [Policy Engine](/components/policy-engine) for implementation details.
     - Decision: **DENY**
     - Context is irrelevant. Social engineering attempts cannot override forbidden actions.
   </Accordion>
+
+  <Accordion title="Example: Ambiguous environment state">
+    **Action**: `credentials.rotate(target="prod-payments")`
+
+    **Context**:
+    - Change ticket says maintenance window is approved
+    - Environment monitor still reports production freeze
+    - High-impact credential action
+
+    **Evaluation**:
+    - Policy: Rotation may be allowed during verified maintenance
+    - Context: Signals conflict
+    - Classification: Context-Dependent Defer
+    - Decision: **DEFER**
+  </Accordion>
 </AccordionGroup>
 
 ---
@@ -255,5 +307,8 @@ See [Policy Engine](/components/policy-engine) for implementation details.
   </Card>
   <Card title="Policy Engine" icon="scale-balanced" href="/components/policy-engine">
     Implementing classification-aware policy evaluation
+  </Card>
+  <Card title="Deferral Service" icon="clock" href="/components/deferral-service">
+    Resolve suspended actions when additional context is required
   </Card>
 </CardGroup>

@@ -38,6 +38,7 @@
               "components/context-accumulator",
               "components/policy-engine",
               "components/approval-service",
+              "components/deferral-service",
               "components/action-classification",
               "components/receipts",
               "components/telemetry"
@@ -61,6 +62,7 @@
               "threats/prompt-injection",
               "threats/malicious-tool-output",
               "threats/confused-deputy",
+              "threats/over-privileged-credentials",
               "threats/data-exfiltration",
               "threats/goal-hijacking",
               "threats/intent-drift",

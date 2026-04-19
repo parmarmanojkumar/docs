@@ -1,0 +1,95 @@
+---
+title: "Side-Channel Leakage"
+description: "Sensitive data escapes through logs, traces, metadata, and other indirect channels around tool execution."
+---
+
+## Overview
+
+Not every leak happens through the primary action output. Agents and their runtimes generate:
+
+- logs
+- traces
+- debug payloads
+- exception messages
+- telemetry fields
+- request metadata
+
+These side channels can disclose sensitive information even when the main tool action appears safe.
+
+---
+
+## Examples
+
+| Channel | Leak Example |
+|---------|--------------|
+| Structured logs | Raw email bodies or API tokens written to logs |
+| Traces | Full SQL queries containing PII stored in tracing spans |
+| Error payloads | Stack traces exposing secrets, file paths, or internal topology |
+| Metadata | Subject lines, object keys, or recipient addresses leaking intent |
+
+---
+
+## Why It Matters
+
+- side channels are often retained longer than primary outputs
+- they are frequently accessible to wider operator audiences
+- they are easy to miss during policy design because they are “supporting data”
+
+---
+
+## AARM Mitigations
+
+### Redaction before export
+
+Telemetry exporters should scrub or hash sensitive fields before they leave the AARM boundary.
+
+### Context-aware logging policy
+
+Logging rules should account for the classification or sensitivity of the data involved in the action.
+
+### Receipt minimization
+
+Receipts should preserve forensic value without copying high-risk payloads unnecessarily.
+
+```yaml
+rules:
+  - id: redact-sensitive-telemetry
+    match:
+      context.data_classification: [PII, CONFIDENTIAL]
+      sink.type: telemetry
+    action: MODIFY
+    modifications:
+      - redact: ["parameters.body", "result.raw_text", "trace.sql"]
+```
+
+---
+
+## Detection Signals
+
+| Signal | Indicates |
+|--------|-----------|
+| Sensitive parameters appear in logs | Missing redaction |
+| Trace payloads exceed expected metadata boundaries | Over-collection |
+| Error responses include secrets or internal topology | Unsafe exception handling |
+| Different retention class than primary data | Secondary exposure risk |
+
+---
+
+## Key Takeaway
+
+<Info>
+Securing the action alone is not enough. AARM must also constrain the surrounding observability surfaces so that context and payloads do not leak through the runtime’s own support systems.
+</Info>
+
+---
+
+## Next
+
+<CardGroup cols={2}>
+  <Card title="Telemetry" icon="chart-line" href="/components/telemetry">
+    Export observability data without leaking sensitive context
+  </Card>
+  <Card title="Receipt Signing" icon="signature" href="/patterns/receipt-signing">
+    Preserve forensic integrity without oversharing payloads
+  </Card>
+</CardGroup>

@@ -1,0 +1,94 @@
+---
+title: "Memory Poisoning"
+description: "Persistent context is manipulated so future agent decisions are biased toward attacker objectives."
+---
+
+## Overview
+
+Memory poisoning occurs when an attacker corrupts the persistent context an agent relies on later: summaries, profiles, vector memories, scratchpads, or long-term state.
+
+The attack is powerful because the malicious influence survives the original interaction.
+
+---
+
+## Attack Pattern
+
+1. Attacker inserts misleading or adversarial content into memory-bearing systems
+2. Agent stores or summarizes that content as trusted context
+3. Future actions are evaluated or planned using the poisoned state
+4. Harm appears later, often without an obvious link to the original attack
+
+Examples:
+
+- a CRM note claims a vendor domain is pre-approved when it is not
+- a memory summary records that a user “always wants external sharing”
+- a persistent vector memory ranks attacker-crafted guidance highly for future retrieval
+
+---
+
+## Why It Matters
+
+| Property | Impact |
+|----------|--------|
+| Persistence | The attack survives the original session |
+| Plausibility | Poisoned memory may look like normal business context |
+| Indirect influence | Future decisions are biased without overt malicious instructions |
+
+---
+
+## AARM Mitigations
+
+### Provenance-aware memory
+
+Track where persistent context came from and when it was written.
+
+### Trust-weighted retrieval
+
+Don’t treat all stored memory as equally authoritative.
+
+### Action-level validation
+
+Even if poisoned memory suggests an action, runtime policy must still validate destination, scope, and sensitivity.
+
+```yaml
+rules:
+  - id: require-verification-for-memory-derived-sharing
+    match:
+      context.memory_source_trust: { lt: 0.8 }
+      tool: email.send
+      parameters.to: { external: true }
+    action: STEP_UP
+    reason: "External sharing recommendation came from low-trust persistent context"
+```
+
+---
+
+## Detection Signals
+
+| Signal | Indicates |
+|--------|-----------|
+| Memory entry lacks source provenance | Unverifiable persistent context |
+| High-impact recommendation from low-trust memory | Poisoning risk |
+| Sudden behavior change tied to retrieved memory | Retrieval-based manipulation |
+| Contradiction between live data and stored summary | Stale or malicious memory |
+
+---
+
+## Key Takeaway
+
+<Info>
+Persistent memory should be treated as untrusted input with history, not as ground truth. AARM protects the action boundary even when the context store has been compromised.
+</Info>
+
+---
+
+## Next
+
+<CardGroup cols={2}>
+  <Card title="Side-Channel Leakage" icon="eye-slash" href="/threats/side-channel-leakage">
+    How sensitive context leaks through logs, traces, and metadata
+  </Card>
+  <Card title="Receipts" icon="receipt" href="/components/receipts">
+    How provenance and audit records differ from mutable agent memory
+  </Card>
+</CardGroup>
