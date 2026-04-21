@@ -1,24 +1,96 @@
 ---
-title: Environmental Manipulation
-description: "Adversaries alter system state to influence agent decisions."
+title: "Environmental Manipulation"
+description: "Attackers alter the surrounding system state so the agent makes harmful but seemingly justified decisions."
 ---
 
-## Description
+## Overview
 
-Adversaries may modify the environment in which the agent operates — altering files, API responses, configuration state, or database records — to influence agent decisions without directly injecting prompts. The agent processes manipulated environmental data as ground truth, leading to actions based on false premises.
+Environmental manipulation targets the state around the agent rather than the prompt itself. Attackers change the surrounding environment so the agent observes misleading facts and plans harmful actions.
 
-This threat exploits the gap between the agent's trust in its environment and the actual integrity of that environment. The manipulation may be subtle: a modified timestamp that changes policy evaluation, a DNS redirect that routes API calls to an attacker-controlled endpoint, or a configuration change that alters the agent's available tools.
+Targets include:
+
+- feature flags
+- configuration state
+- file-system markers
+- task queues
+- inventory labels
+- health or status endpoints
 
 ---
 
-## AARM Mitigation
+## Example
 
-Input provenance tracking records the source and integrity of data the agent processes, enabling detection when environmental inputs deviate from expected baselines.
+```
+Agent goal: rotate expired credentials in production
 
-- **Input provenance tracking** records the source and integrity of environmental inputs that influence action decisions
-- **Anomaly detection** flags unexpected changes in environmental state that correlate with changes in agent behavior
-- **Policy evaluation** considers environmental context as part of the action decision, enabling rules that account for environmental integrity
+Attacker changes:
+- maintenance window flag = true
+- target environment label = staging
+
+Result:
+Agent executes a high-impact production action under false environmental assumptions.
+```
+
+---
+
+## Why It Matters
+
+Environmental manipulation is dangerous because the agent may be reasoning “correctly” from false premises. Traditional prompt defenses do not help.
+
+---
+
+## AARM Mitigations
+
+### Provenance for environmental facts
+
+Track where critical context came from and how fresh it is.
+
+### Cross-check high-impact state
+
+Require multiple sources or higher-confidence verification before destructive actions.
+
+### Defer on conflicting environment signals
+
+If system state is inconsistent, suspend the action until the ambiguity is resolved.
+
+```yaml
+rules:
+  - id: defer-on-environment-conflict
+    match:
+      tool: credentials.rotate
+      context.environment_state_conflict: true
+    action: DEFER
+    reason: "Conflicting environment signals must be resolved before credential rotation"
+```
+
+---
+
+## Detection Signals
+
+| Signal | Indicates |
+|--------|-----------|
+| Inconsistent environment labels across systems | State tampering or stale metadata |
+| High-impact action depends on a single mutable flag | Weak validation |
+| Sudden environment changes before privileged action | Manipulation risk |
+| Observed state differs from recent receipts or inventory | Integrity mismatch |
+
+---
+
+## Key Takeaway
 
 <Info>
-  Environmental manipulation requires complementary infrastructure-level protections beyond AARM's action-level scope.
+Agents are not only vulnerable to malicious instructions. They are also vulnerable to malicious world state. AARM protects against this by treating critical environmental facts as security-relevant inputs rather than passive background.
 </Info>
+
+---
+
+## Next
+
+<CardGroup cols={2}>
+  <Card title="Deferral Service" icon="clock" href="/components/deferral-service">
+    How to suspend actions when environmental facts conflict
+  </Card>
+  <Card title="Threat Model Overview" icon="triangle-exclamation" href="/threats/overview">
+    See how this fits into the broader AARM threat set
+  </Card>
+</CardGroup>

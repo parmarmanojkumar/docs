@@ -1,0 +1,225 @@
+---
+title: Deferral Service
+description: "Resolve DEFER decisions through progressive context collection, bounded waiting, and escalation."
+---
+
+## Purpose
+
+The Deferral Service handles actions that cannot be safely resolved into **ALLOW**, **DENY**, **MODIFY**, or **STEP_UP** at evaluation time.
+
+AARM uses **DEFER** when context is:
+
+- incomplete
+- ambiguous
+- conflicting
+- stale
+
+The action remains **blocked before execution** while the system gathers additional evidence or waits for a bounded external condition to change.
+
+<Warning>
+  **DEFER is not a soft allow.** No side effect may execute while an action is deferred. The service must suspend the action, preserve identity and context, and either resolve it or terminate it with a bounded timeout.
+</Warning>
+
+---
+
+## When to Use DEFER
+
+Use deferral when the policy engine knows that a binary decision would be premature.
+
+| Situation | Why defer instead of deny immediately? |
+|-----------|----------------------------------------|
+| Ambiguous maintenance window | The action may be allowed once timing is verified |
+| Missing asset classification | The system needs fresh metadata before judging exposure |
+| External verification pending | A dependency such as DLP, data owner service, or ticket state has not responded yet |
+| Conflicting context signals | The system sees both benign and suspicious indicators and needs more evidence |
+
+DEFER is not appropriate when:
+
+- the action clearly violates hard policy
+- no additional context can realistically change the decision
+- the system is simply unavailable and policy requires immediate fail-closed denial
+
+---
+
+## Flow
+
+```
+Action reaches Policy Engine
+           ↓
+Policy Engine returns DEFER
+           ↓
+Deferral Service stores suspended action + full context
+           ↓
+Resolution loop gathers missing evidence
+           ↓
+   ┌───────────────┬──────────────────┬───────────────┐
+Resolved ALLOW   Resolved DENY     Needs human      Timeout
+   ↓                ↓              escalation         ↓
+Execute           Block           STEP_UP           DENY
+   ↓                ↓                ↓                ↓
+Receipt           Receipt         Approval flow     Receipt
+```
+
+---
+
+## Interface
+
+```python
+@dataclass
+class DeferredAction:
+    id: str
+    action: Action
+    context: SessionContext
+    identity: ActionIdentity
+    reason: str
+    context_needed: list[str]
+    created_at: datetime
+    timeout_at: datetime
+    attempts: int = 0
+
+@dataclass
+class DeferralResolution:
+    resolved: bool
+    result: Literal["ALLOW", "DENY", "STEP_UP", "TIMEOUT"]
+    reason: str
+    data: dict | None = None
+    resolved_at: datetime | None = None
+
+class DeferralService:
+    async def suspend(
+        self,
+        action: Action,
+        context: SessionContext,
+        identity: ActionIdentity,
+        reason: str,
+        context_needed: list[str],
+        timeout_seconds: int = 300,
+    ) -> DeferralResolution:
+        ...
+
+    async def resume(self, deferred_id: str, resolution_data: dict) -> DeferralResolution:
+        ...
+```
+
+---
+
+## Progressive Context Collection
+
+The Deferral Service should try to resolve ambiguity automatically before escalating to a human approver.
+
+Typical sources include:
+
+- fresh metadata from inventory or classification services
+- recent entitlement state from identity or access systems
+- ticket status or maintenance-window validation
+- explicit user confirmation for narrow questions
+- risk-signal recomputation using updated session evidence
+
+```python
+class DeferralService:
+    async def suspend(self, action, context, identity, reason, context_needed, timeout_seconds=300):
+        deferred = DeferredAction(
+            id=generate_id(),
+            action=action,
+            context=context,
+            identity=identity,
+            reason=reason,
+            context_needed=context_needed,
+            created_at=datetime.utcnow(),
+            timeout_at=datetime.utcnow() + timedelta(seconds=timeout_seconds),
+        )
+        await self.store.save(deferred)
+
+        while datetime.utcnow() < deferred.timeout_at:
+            resolution = await self._attempt_resolution(deferred)
+            if resolution.resolved:
+                await self.store.record_resolution(deferred.id, resolution)
+                return resolution
+            await asyncio.sleep(self.poll_interval_seconds)
+
+        timeout = DeferralResolution(
+            resolved=True,
+            result="TIMEOUT",
+            reason="Deferred action exceeded timeout window",
+            resolved_at=datetime.utcnow(),
+        )
+        await self.store.record_resolution(deferred.id, timeout)
+        return timeout
+```
+
+---
+
+## Identity and Context Preservation
+
+The deferred action must retain the original security context captured at submission time:
+
+- human principal
+- service identity
+- agent/session identity
+- role or privilege scope
+- policy version and context snapshot
+
+This is important because resolution may occur minutes later, after other session activity has happened.
+
+<Info>
+  A deferred action is not a new action. It is the original action under suspended evaluation. Resolution logic should preserve provenance back to the original decision point.
+</Info>
+
+---
+
+## Timeouts and Escalation
+
+Every deferral must have a bounded timeout and an explicit terminal behavior.
+
+| Strategy | Use When |
+|----------|----------|
+| **Timeout → DENY** | High-risk actions where absence of certainty should fail closed |
+| **Timeout → STEP_UP** | Additional context may exist but requires human judgment to obtain |
+| **Immediate escalation** | The required context is inherently human, not machine-resolvable |
+
+Recommended controls:
+
+- max total defer duration
+- max defer chain depth
+- max retries against external resolvers
+- audit record of every resolution attempt
+
+---
+
+## Relationship to Approval Service
+
+Deferral and approval serve different purposes:
+
+| Decision | Problem | Primary Handler |
+|----------|---------|-----------------|
+| **STEP_UP** | Action is understood but requires human authorization | [Approval Service](/components/approval-service) |
+| **DEFER** | Action cannot yet be safely classified | Deferral Service |
+
+A deferred action may later escalate into **STEP_UP**, but that should happen only after automated resolution is exhausted or policy says the remaining ambiguity is a human judgment call.
+
+---
+
+## Conformance Notes
+
+An AARM-conformant implementation of DEFER should satisfy:
+
+- pre-execution suspension
+- no side effects during deferral
+- bounded timeout semantics
+- preserved identity and context
+- receipts for both deferral and terminal resolution
+
+See [Conformance Requirements](/conformance/requirements) and [Conformance Testing](/conformance/testing).
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Deferral Flows" icon="clock" href="/patterns/deferral-flows">
+    Concrete implementation patterns for progressive resolution and timeout handling
+  </Card>
+  <Card title="Approval Service" icon="user-check" href="/components/approval-service">
+    How DEFER escalates when automated resolution is insufficient
+  </Card>
+</CardGroup>
