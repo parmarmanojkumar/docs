@@ -4,6 +4,64 @@ sidebarTitle: Testing
 description: "How to verify an AARM implementation satisfies conformance requirements."
 ---
 
+## Validation Process <Badge variant="outline">Beta</Badge>
+
+Conformance validation is performed through the **AARM Conformance MCP server**. You will be guided by our agent, which runs the assessment end-to-end against your implementation — there are no manual checklists to fill out.
+
+<Steps>
+  <Step title="Request an activation key">
+    Submit the form below with your organization name, product name, and target conformance level (Core or Extended). If your organization is on the allow-list, you will receive an activation key by email. **Only listed organizations can run the assessment.**
+  </Step>
+  <Step title="Connect to the AARM MCP server">
+    Add the server to Claude Desktop or Claude Code using the instructions below. The server URL is:
+
+    ```
+    https://aarm-conformance-mcp.herman-d10.workers.dev/
+    ```
+  </Step>
+  <Step title="Run the assessment">
+    Start a conversation with Claude and ask it to run the AARM conformance assessment. The agent will walk you through each check, collect evidence, and produce a validation report.
+  </Step>
+</Steps>
+
+### Install on Claude Code
+
+Run this in your terminal:
+
+```bash
+claude mcp add --transport http aarm-conformance https://aarm-conformance-mcp.herman-d10.workers.dev/
+```
+
+Then launch Claude Code and ask it to start the AARM conformance assessment.
+
+### Install on Claude Desktop
+
+Open your Claude Desktop config file:
+
+- **macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
+
+Add the AARM server to the `mcpServers` section:
+
+```json
+{
+  "mcpServers": {
+    "aarm-conformance": {
+      "type": "http",
+      "url": "https://aarm-conformance-mcp.herman-d10.workers.dev/"
+    }
+  }
+}
+```
+
+Restart Claude Desktop. The AARM agent will be available in your next conversation.
+
+### Request access
+
+<iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdTjaSGNVLm8IAvOP29MZmqBorJ5h4oognTQc5tFRQEo9TfGg/viewform?embedded=true" width="100%" height="1210" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+
+---
+
 ## Testing Approach
 
 Each conformance requirement (R1 through R9) includes a **Verification** section describing the minimum test to confirm conformance. Conformance testing covers two areas: **technical requirements** (R1 through R9), which verify the runtime behavior of the system, and **organizational requirements**, which verify that the organization meets the conditions for publicly describing its system as AARM-conformant.
@@ -46,25 +104,5 @@ Each conformance requirement (R1 through R9) includes a **Verification** section
 | R7 | Execute diverging action sequence exceeding drift threshold | Alert, deferral, or escalation triggered | SHOULD |
 | R8 | Configure SIEM export | Events appear with correct schema including DEFER events | SHOULD |
 | R9 | Submit read operation | Issued credential cannot perform writes | SHOULD |
-
----
-
-## Validation Process
-
-AARM is an open source project and there is no charge for conformance validation.
-
-<Steps>
-  <Step title="Submit a request">
-    Fill out the conformance validation form below. Include your organization name, product name, and which conformance level you are targeting (Core or Extended).
-  </Step>
-  <Step title="Receive the validation package">
-    We will email you the validation package, which includes the full set of technical and claiming conformance checks your system needs to satisfy.
-  </Step>
-  <Step title="Complete validation">
-    It can take up to 14 business days to get validated from the time you submit a completed package.
-  </Step>
-</Steps>
-
-<iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdTjaSGNVLm8IAvOP29MZmqBorJ5h4oognTQc5tFRQEo9TfGg/viewform?embedded=true" width="100%" height="1210" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
 
 ---
